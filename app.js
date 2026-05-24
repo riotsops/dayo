@@ -68,7 +68,7 @@ function startApp() {
 
   updateStreak();
   loadTodayCheck();
-
+requestNotifications();
   showScreen('screen-home');
   document.getElementById('bottom-nav').classList.add('visible');
 }
@@ -422,4 +422,41 @@ function stopBreathing() {
   btn.classList.remove('running');
 
   showScreen('screen-home');
+}
+
+// NOTIFICATIONS
+function requestNotifications() {
+  if ('Notification' in window && 'serviceWorker' in navigator) {
+    Notification.requestPermission().then(function(permission) {
+      if (permission === 'granted') {
+        registerServiceWorker();
+      }
+    });
+  }
+}
+
+function registerServiceWorker() {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(function(reg) {
+      console.log('SW registered');
+      scheduleDailyNotification(reg);
+    });
+}
+
+function scheduleDailyNotification(reg) {
+  const now = new Date();
+  const morning = new Date();
+  morning.setHours(8, 0, 0, 0);
+  if (morning < now) morning.setDate(morning.getDate() + 1);
+  const delay = morning - now;
+  setTimeout(function() {
+    const mood = localStorage.getItem('dayo_mood') || 'peaceful';
+    const list = messages[mood] || messages['peaceful'];
+    const msg = list[Math.floor(Math.random() * list.length)];
+    reg.showNotification('Dayo — good morning', {
+      body: msg,
+      icon: '/icon.png',
+      vibrate: [100, 50, 100]
+    });
+  }, delay);
 }
