@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Dayo</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <div class="atmosphere">
+    <div class="atmosphere-glow glow-1"></div>
+    <div class="atmosphere-glow glow-2"></div>
+  </div>
+
+  <div class="screen active" id="screen-onboarding">
+    <div class="onboarding-wrap">
+      <div class="logo-mark">◎</div>
+      <h1 class="app-name">Dayo</h1>
+      <p class="app-tagline">your quiet daily companion</p>
+      <div class="input-group">
+        <input type="text" id="user-name" placeholder="what should we call you?" maxlength="20"/>
+      </div>
+      <div class="input-group">
+        <input type="number" id="user-age" placeholder="how old are you?" min="10" max="99"/>
+      </div>
+      <button class="btn-primary" id="btn-start">begin quietly →</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-home">
+    <div class="home-wrap">
+
+      <div class="home-top">
+        <div>
+          <div class="greeting" id="greeting-text"></div>
+          <div class="home-meta">
+            <span id="home-date"></span>
+            <div class="home-meta-dot"></div>
+            <span id="home-vibe"></span>
+          </div>
+        </div>
+        <button class="settings-icon" onclick="showScreen('screen-settings')">⚙</button>
+      </div>
+
+      <div class="streak-wrap">
+        <div class="streak-flame">🕯</div>
+        <div class="streak-info">
+          <div class="streak-number" id="streak-number">0</div>
+          <div class="streak-text" id="streak-text">quiet days reflected</div>
+        </div>
+      </div>
+
+      <div class="message-card">
+        <div class="message-mood-tag" id="message-mood-tag"></div>
+        <p class="message-text" id="message-text"></p>
+        <div class="message-actions">
+          <button class="msg-action-btn" id="save-btn" onclick="saveMessage()">
+            <span>♡</span>
+            <small>save</small>
+          </button>
+          <button class="msg-action-btn" onclick="shareMessage()">
+            <span>↗</span>
+            <small>share</small>
+          </button>
+          <button class="msg-action-btn" onclick="newMessage()">
+            <span>↻</span>
+            <small>another</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="mood-pills-wrap">
+        <div class="mood-pills-label">how do you want to feel today?</div>
+        <div class="mood-pills">
+          <button class="mood-pill" data-mood="peaceful" onclick="switchMood('peaceful')">🌿 Peace</button>
+          <button class="mood-pill" data-mood="disciplined" onclick="switchMood('disciplined')">⚡ Discipline</button>
+          <button class="mood-pill" data-mood="comforting" onclick="switchMood('comforting')">🤍 Comfort</button>
+          <button class="mood-pill" data-mood="ambitious" onclick="switchMood('ambitious')">🔥 Ambition</button>
+          <button class="mood-pill" data-mood="healing" onclick="switchMood('healing')">🌸 Healing</button>
+          <button class="mood-pill" data-mood="reflective" onclick="switchMood('reflective')">🌙 Reflect</button>
+        </div>
+      </div>
+
+      <!-- BREATHING BUTTON -->
+      <button class="breath-btn" onclick="showScreen('screen-breathing')">
+        <div class="breath-btn-ring"></div>
+        <div class="breath-btn-inner">
+          <span class="breath-btn-icon">◎</span>
+          <span class="breath-btn-text">take a quiet breath</span>
+        </div>
+      </button>
+
+      <div class="reflection-wrap">
+        <div class="reflection-label" id="reflection-label">how was your day?</div>
+        <div class="day-check-row">
+          <button class="check-btn good" id="btn-good" onclick="markDay('good')">✓ good day</button>
+          <button class="check-btn bad" id="btn-bad" onclick="markDay('bad')">✗ hard day</button>
+        </div>
+        <div class="journal-box" id="journal-box">
+          <textarea id="journal-input" placeholder="write something... even one line is enough" rows="3"></textarea>
+          <div class="journal-save-row">
+            <button class="btn-ghost" onclick="saveJournal()">save quietly →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BREATHING SCREEN -->
+  <div class="screen" id="screen-breathing">
+    <div class="breathing-wrap">
+      <button class="back-btn" onclick="stopBreathing()">← back</button>
+      <div class="breathing-title">take a quiet breath</div>
+      <div class="breathing-subtitle">let everything else wait</div>
+
+      <div class="breathing-circle-wrap">
+        <div class="breathing-ring ring-3"></div>
+        <div class="breathing-ring ring-2"></div>
+        <div class="breathing-ring ring-1"></div>
+        <div class="breathing-circle" id="breathing-circle">
+          <span class="breathing-instruction" id="breathing-instruction">tap to begin</span>
+        </div>
+      </div>
+
+      <div class="breathing-phase" id="breathing-phase"></div>
+      <div class="breathing-count" id="breathing-count"></div>
+
+      <button class="breath-start-btn" id="breath-start-btn" onclick="startBreathing()">
+        begin
+      </button>
+
+      <div class="breathing-tip">
+        4 seconds in · 4 seconds hold · 4 seconds out
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-calendar">
+    <div class="calendar-wrap">
+      <div class="cal-header">
+        <button onclick="changeMonth(-1)">‹</button>
+        <span id="cal-month-label"></span>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-day-detail">
+    <div class="detail-wrap">
+      <button class="back-btn" onclick="showScreen('screen-calendar')">← back to calendar</button>
+      <h2 class="detail-date" id="detail-date"></h2>
+      <div class="detail-mood" id="detail-mood"></div>
+      <textarea class="detail-journal" id="detail-journal" placeholder="what do you remember about this day..."></textarea>
+      <button class="btn-primary" onclick="saveDetailJournal()">save →</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-saved">
+    <div class="saved-wrap">
+      <h2 class="screen-title">saved messages</h2>
+      <div id="saved-list"></div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-settings">
+    <div class="settings-wrap">
+      <div class="settings-header">
+        <button class="back-btn" onclick="showScreen('screen-home')">← back</button>
+        <h2 class="screen-title">settings</h2>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">your name</div>
+        <input type="text" class="settings-input" id="settings-name" maxlength="20"/>
+        <button class="btn-ghost" id="btn-save-name" onclick="saveName()">update name</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">your age</div>
+        <input type="number" class="settings-input" id="settings-age" min="10" max="99"/>
+        <button class="btn-ghost" id="btn-save-age" onclick="saveAge()">update age</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">privacy</div>
+        <div class="settings-about">
+          <p>All your entries live only on your device. Nothing is sent anywhere. Ever.</p>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">about</div>
+        <div class="settings-about">
+          <p>Dayo — your quiet daily companion.</p>
+          <p>Made with care in India 🇮🇳</p>
+          <p>Version 1.0</p>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label danger-label">danger zone</div>
+        <button class="btn-danger" onclick="clearAllData()">clear all data</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" id="bottom-nav">
+    <button onclick="showScreen('screen-home')" class="nav-btn active" id="nav-home">
+      <span>◎</span>
+      <small>home</small>
+    </button>
+    <button onclick="showScreen('screen-calendar')" class="nav-btn" id="nav-calendar">
+      <span>▦</span>
+      <small>journal</small>
+    </button>
+    <button onclick="showScreen('screen-saved')" class="nav-btn" id="nav-saved">
+      <span>♡</span>
+      <small>saved</small>
+    </button>
+  </nav>
+
+  <script src="messages.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
