@@ -19,17 +19,73 @@ function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-window.onload = function() {
-  // check if user exists — never show onboarding again
-  const existingUser = localStorage.getItem('dayo_user');
-  
-  if (existingUser) {
-    // go straight to app, never onboarding
-    startApp();
+// REGISTER SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(function(reg) {
+        console.log('SW registered');
+      })
+      .catch(function(err) {
+        console.log('SW error:', err);
+      });
+  });
+}
+
+// REQUEST NOTIFICATIONS
+function requestNotifications() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    scheduleNotifications();
     return;
   }
+  if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(function(permission) {
+      if (permission === 'granted') {
+        scheduleNotifications();
+      }
+    });
+  }
+}
 
-  // first time only
+function scheduleNotifications() {
+  const mood = localStorage.getItem('dayo_mood') || 'peaceful';
+  const list = messages[mood] || messages['peaceful'];
+  const msg = list[Math.floor(Math.random() * list.length)];
+
+  // morning notification at 8 AM
+  const now = new Date();
+  const morning = new Date();
+  morning.setHours(8, 0, 0, 0);
+  if (morning <= now) morning.setDate(morning.getDate() + 1);
+  const morningDelay = morning - now;
+
+  setTimeout(function() {
+    if (Notification.permission === 'granted') {
+      new Notification('Dayo — good morning', {
+        body: msg,
+        icon: '/icon.png'
+      });
+    }
+  }, morningDelay);
+
+  // evening notification at 8 PM
+  const evening = new Date();
+  evening.setHours(20, 0, 0, 0);
+  if (evening <= now) evening.setDate(evening.getDate() + 1);
+  const eveningDelay = evening - now;
+
+  setTimeout(function() {
+    if (Notification.permission === 'granted') {
+      new Notification('Dayo — evening reflection', {
+        body: 'how did today feel? take a moment to reflect.',
+        icon: '/icon.png'
+      });
+    }
+  }, eveningDelay);
+}
+
+window.onload = function() {
   document.getElementById('btn-start').onclick = function() {
     const name = document.getElementById('user-name').value.trim();
     const age = document.getElementById('user-age').value.trim();
@@ -41,6 +97,10 @@ window.onload = function() {
     localStorage.setItem('dayo_setup_done', 'yes');
     startApp();
   };
+
+  if (localStorage.getItem('dayo_user')) {
+    startApp();
+  }
 };
 
 function startApp() {
@@ -68,7 +128,8 @@ function startApp() {
 
   updateStreak();
   loadTodayCheck();
-requestNotifications();
+  requestNotifications();
+
   showScreen('screen-home');
   document.getElementById('bottom-nav').classList.add('visible');
 }
@@ -150,7 +211,6 @@ function updateStreak() {
   let streak = parseInt(localStorage.getItem('dayo_streak') || '0');
   const lastOpen = localStorage.getItem('dayo_last_open');
   if (lastOpen === today) {
-    // same day, no change
   } else if (lastOpen === yesterday) {
     streak += 1;
     localStorage.setItem('dayo_streak', streak);
@@ -351,46 +411,37 @@ function getKeyFromDate(d) { return d.getFullYear() + '-' + (d.getMonth()+1) + '
 function getDayData(key) { return JSON.parse(localStorage.getItem('dayo_day_' + key) || '{}'); }
 function saveDayData(key, data) { localStorage.setItem('dayo_day_' + key, JSON.stringify(data)); }
 
-/* =====================
-   BREATHING
-   ===================== */
+// BREATHING
 let breathInterval = null;
 let breathRunning = false;
 
 function startBreathing() {
   if (breathRunning) {
     stopBreathing();
-    showScreen('screen-home');
     return;
   }
-
   breathRunning = true;
   const btn = document.getElementById('breath-start-btn');
   btn.textContent = 'stop';
   btn.classList.add('running');
-
   const circle = document.getElementById('breathing-circle');
   const instruction = document.getElementById('breathing-instruction');
   const phase = document.getElementById('breathing-phase');
   const count = document.getElementById('breathing-count');
-
   const phases = [
-    { name: 'breathe in', class: 'inhale', duration: 4 },
-    { name: 'hold', class: 'hold', duration: 4 },
-    { name: 'breathe out', class: 'exhale', duration: 4 }
+    { name: 'breathe in', cls: 'inhale', duration: 4 },
+    { name: 'hold', cls: 'hold', duration: 4 },
+    { name: 'breathe out', cls: 'exhale', duration: 4 }
   ];
-
   let phaseIndex = 0;
   let secondsLeft = phases[0].duration;
-
   function runPhase() {
     const current = phases[phaseIndex];
-    circle.className = 'breathing-circle ' + current.class;
+    circle.className = 'breathing-circle ' + current.cls;
     instruction.textContent = current.name;
     phase.textContent = current.name;
     secondsLeft = current.duration;
     count.textContent = secondsLeft;
-
     breathInterval = setInterval(function() {
       secondsLeft--;
       count.textContent = secondsLeft;
@@ -401,7 +452,6 @@ function startBreathing() {
       }
     }, 1000);
   }
-
   runPhase();
 }
 
@@ -413,50 +463,11 @@ function stopBreathing() {
   const phase = document.getElementById('breathing-phase');
   const count = document.getElementById('breathing-count');
   const btn = document.getElementById('breath-start-btn');
-
   circle.className = 'breathing-circle';
   instruction.textContent = 'tap to begin';
   phase.textContent = '';
   count.textContent = '';
   btn.textContent = 'begin';
   btn.classList.remove('running');
-
   showScreen('screen-home');
-}
-
-// NOTIFICATIONS
-function requestNotifications() {
-  if ('Notification' in window && 'serviceWorker' in navigator) {
-    Notification.requestPermission().then(function(permission) {
-      if (permission === 'granted') {
-        registerServiceWorker();
-      }
-    });
-  }
-}
-
-function registerServiceWorker() {
-  navigator.serviceWorker.register('/service-worker.js')
-    .then(function(reg) {
-      console.log('SW registered');
-      scheduleDailyNotification(reg);
-    });
-}
-
-function scheduleDailyNotification(reg) {
-  const now = new Date();
-  const morning = new Date();
-  morning.setHours(8, 0, 0, 0);
-  if (morning < now) morning.setDate(morning.getDate() + 1);
-  const delay = morning - now;
-  setTimeout(function() {
-    const mood = localStorage.getItem('dayo_mood') || 'peaceful';
-    const list = messages[mood] || messages['peaceful'];
-    const msg = list[Math.floor(Math.random() * list.length)];
-    reg.showNotification('Dayo — good morning', {
-      body: msg,
-      icon: '/icon.png',
-      vibrate: [100, 50, 100]
-    });
-  }, delay);
 }
