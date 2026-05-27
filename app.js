@@ -34,20 +34,33 @@ if ('serviceWorker' in navigator) {
 
 // REQUEST NOTIFICATIONS
 function requestNotifications() {
-  if (!('Notification' in window)) return;
+  const btn = document.getElementById('btn-enable-notif');
+  if (!('Notification' in window)) {
+    if (btn) btn.textContent = 'not supported on this browser';
+    return;
+  }
   if (Notification.permission === 'granted') {
+    if (btn) {
+      btn.textContent = 'notifications enabled ✓';
+      btn.style.color = 'var(--good)';
+      btn.style.borderColor = 'var(--good)';
+    }
     scheduleNotifications();
     return;
   }
-  if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(function(permission) {
-      if (permission === 'granted') {
-        scheduleNotifications();
+  Notification.requestPermission().then(function(permission) {
+    if (permission === 'granted') {
+      if (btn) {
+        btn.textContent = 'notifications enabled ✓';
+        btn.style.color = 'var(--good)';
+        btn.style.borderColor = 'var(--good)';
       }
-    });
-  }
+      scheduleNotifications();
+    } else {
+      if (btn) btn.textContent = 'please allow in browser settings';
+    }
+  });
 }
-
 function scheduleNotifications() {
   const mood = localStorage.getItem('dayo_mood') || 'peaceful';
   const list = messages[mood] || messages['peaceful'];
@@ -355,10 +368,20 @@ function loadSaved() {
 }
 
 function openSettings() {
+  function openSettings() {
   document.getElementById('settings-name').value = localStorage.getItem('dayo_user') || '';
   document.getElementById('settings-age').value = localStorage.getItem('dayo_age') || '';
+  const savedTheme = localStorage.getItem('dayo_theme') || 'auto';
+  document.querySelectorAll('.theme-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.theme === savedTheme);
+  });
+  const notifBtn = document.getElementById('btn-enable-notif');
+  if (notifBtn && Notification.permission === 'granted') {
+    notifBtn.textContent = 'notifications enabled ✓';
+    notifBtn.style.color = 'var(--good)';
+    notifBtn.style.borderColor = 'var(--good)';
+  }
 }
-
 function saveName() {
   const name = document.getElementById('settings-name').value.trim();
   if (!name) { alert('name cannot be empty'); return; }
@@ -476,15 +499,30 @@ function stopBreathing() {
    AUTO THEME
    ===================== */
 function applyTheme() {
-  const h = new Date().getHours();
-  const isLight = h >= 6 && h < 18;
-  if (isLight) {
+  const saved = localStorage.getItem('dayo_theme');
+  if (saved === 'light') {
     document.body.classList.add('light');
-  } else {
+  } else if (saved === 'dark') {
     document.body.classList.remove('light');
+  } else {
+    // auto based on time
+    const h = new Date().getHours();
+    if (h >= 6 && h < 18) {
+      document.body.classList.add('light');
+    } else {
+      document.body.classList.remove('light');
+    }
   }
 }
 
+function setTheme(theme) {
+  localStorage.setItem('dayo_theme', theme);
+  applyTheme();
+  // update toggle buttons
+  document.querySelectorAll('.theme-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.theme === theme);
+  });
+}
 // apply on load and every 30 minutes
 applyTheme();
 setInterval(applyTheme, 30 * 60 * 1000);

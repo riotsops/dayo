@@ -761,3 +761,30 @@ body.light .cal-day {
 body.light .settings-icon {
   background: rgba(255,255,255,0.6);
 }
+
+/* THEME TOGGLE */
+.theme-toggle-row {
+  display: flex;
+  gap: 8px;
+}
+.theme-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 12px;
+  color: var(--text2);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.theme-btn.active {
+  border-color: var(--border-accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.theme-btn:active { transform: scale(0.96); }
