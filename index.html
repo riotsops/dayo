@@ -6,15 +6,16 @@
   <title>Dayo</title>
   <link rel="manifest" href="manifest.json"/>
   <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
   <div class="atmosphere">
-    <div class="atmosphere-glow glow-1"></div>
-    <div class="atmosphere-glow glow-2"></div>
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
   </div>
 
+  <!-- ONBOARDING -->
   <div class="screen active" id="screen-onboarding">
     <div class="onboarding-wrap">
       <div class="logo-mark">◎</div>
@@ -30,30 +31,27 @@
     </div>
   </div>
 
+  <!-- HOME -->
   <div class="screen" id="screen-home">
     <div class="home-wrap">
 
+      <!-- TOP BAR -->
       <div class="home-top">
-        <div>
-          <div class="greeting" id="greeting-text"></div>
-          <div class="home-meta">
-            <span id="home-date"></span>
-            <div class="home-meta-dot"></div>
-            <span id="home-vibe"></span>
-          </div>
-        </div>
         <button class="settings-icon" onclick="showScreen('screen-settings')">⚙</button>
       </div>
 
-      <div class="streak-wrap">
-        <div class="streak-flame">🕯</div>
-        <div class="streak-info">
-          <div class="streak-number" id="streak-number">0</div>
-          <div class="streak-text" id="streak-text">quiet days reflected</div>
+      <!-- HERO GREETING -->
+      <div class="hero-greeting">
+        <div class="greeting" id="greeting-text"></div>
+        <div class="home-meta">
+          <span id="home-date"></span>
+          <span class="home-meta-dot">·</span>
+          <span id="home-vibe"></span>
         </div>
       </div>
 
-      <div class="message-card">
+      <!-- HERO MESSAGE -->
+      <div class="message-hero">
         <div class="message-mood-tag" id="message-mood-tag"></div>
         <p class="message-text" id="message-text"></p>
         <div class="message-actions">
@@ -72,8 +70,9 @@
         </div>
       </div>
 
+      <!-- MOOD PILLS -->
       <div class="mood-pills-wrap">
-        <div class="mood-pills-label">how do you want to feel today?</div>
+        <div class="mood-pills-label">how do you want to feel?</div>
         <div class="mood-pills">
           <button class="mood-pill" data-mood="peaceful" onclick="switchMood('peaceful')">🌿 Peace</button>
           <button class="mood-pill" data-mood="disciplined" onclick="switchMood('disciplined')">⚡ Discipline</button>
@@ -84,15 +83,23 @@
         </div>
       </div>
 
-      <!-- BREATHING BUTTON -->
-      <button class="breath-btn" onclick="showScreen('screen-breathing')">
-        <div class="breath-btn-ring"></div>
-        <div class="breath-btn-inner">
-          <span class="breath-btn-icon">◎</span>
-          <span class="breath-btn-text">take a quiet breath</span>
+      <!-- STREAK + BREATH ROW -->
+      <div class="bottom-cards">
+        <div class="streak-card">
+          <div class="streak-flame">🕯</div>
+          <div class="streak-info">
+            <div class="streak-number" id="streak-number">0</div>
+            <div class="streak-text" id="streak-text">days</div>
+          </div>
         </div>
-      </button>
+        <button class="breath-card" onclick="showScreen('screen-breathing')">
+          <div class="breath-card-ring"></div>
+          <span class="breath-card-icon">◎</span>
+          <span class="breath-card-text">breathe</span>
+        </button>
+      </div>
 
+      <!-- REFLECTION -->
       <div class="reflection-wrap">
         <div class="reflection-label" id="reflection-label">how was your day?</div>
         <div class="day-check-row">
@@ -110,13 +117,12 @@
     </div>
   </div>
 
-  <!-- BREATHING SCREEN -->
+  <!-- BREATHING -->
   <div class="screen" id="screen-breathing">
     <div class="breathing-wrap">
       <button class="back-btn" onclick="stopBreathing()">← back</button>
       <div class="breathing-title">take a quiet breath</div>
       <div class="breathing-subtitle">let everything else wait</div>
-
       <div class="breathing-circle-wrap">
         <div class="breathing-ring ring-3"></div>
         <div class="breathing-ring ring-2"></div>
@@ -125,20 +131,14 @@
           <span class="breathing-instruction" id="breathing-instruction">tap to begin</span>
         </div>
       </div>
-
       <div class="breathing-phase" id="breathing-phase"></div>
       <div class="breathing-count" id="breathing-count"></div>
-
-      <button class="breath-start-btn" id="breath-start-btn" onclick="startBreathing()">
-        begin
-      </button>
-
-      <div class="breathing-tip">
-        4 seconds in · 4 seconds hold · 4 seconds out
-      </div>
+      <button class="breath-start-btn" id="breath-start-btn" onclick="startBreathing()">begin</button>
+      <div class="breathing-tip">4 seconds in · 4 hold · 4 out</div>
     </div>
   </div>
 
+  <!-- CALENDAR -->
   <div class="screen" id="screen-calendar">
     <div class="calendar-wrap">
       <div class="cal-header">
@@ -150,9 +150,10 @@
     </div>
   </div>
 
+  <!-- DAY DETAIL -->
   <div class="screen" id="screen-day-detail">
     <div class="detail-wrap">
-      <button class="back-btn" onclick="showScreen('screen-calendar')">← back to calendar</button>
+      <button class="back-btn" onclick="showScreen('screen-calendar')">← back</button>
       <h2 class="detail-date" id="detail-date"></h2>
       <div class="detail-mood" id="detail-mood"></div>
       <textarea class="detail-journal" id="detail-journal" placeholder="what do you remember about this day..."></textarea>
@@ -160,6 +161,7 @@
     </div>
   </div>
 
+  <!-- SAVED -->
   <div class="screen" id="screen-saved">
     <div class="saved-wrap">
       <h2 class="screen-title">saved messages</h2>
@@ -167,11 +169,19 @@
     </div>
   </div>
 
+  <!-- SETTINGS -->
   <div class="screen" id="screen-settings">
     <div class="settings-wrap">
       <div class="settings-header">
         <button class="back-btn" onclick="showScreen('screen-home')">← back</button>
         <h2 class="screen-title">settings</h2>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">notifications</div>
+        <div class="settings-about">
+          <p>Get a gentle message every morning at 8 AM and a reflection prompt every evening.</p>
+        </div>
+        <button class="btn-ghost" id="btn-enable-notif" onclick="requestNotifications()">enable notifications</button>
       </div>
       <div class="settings-section">
         <div class="settings-label">your name</div>
@@ -204,6 +214,7 @@
     </div>
   </div>
 
+  <!-- NAV -->
   <nav class="bottom-nav" id="bottom-nav">
     <button onclick="showScreen('screen-home')" class="nav-btn active" id="nav-home">
       <span>◎</span>
