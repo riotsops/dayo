@@ -696,3 +696,68 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .nav-btn small { font-size:10px; font-weight:400; }
 .nav-btn.active { color:var(--accent); }
 .nav-btn.active::before { content:''; position:absolute; top:-1px; left:50%; transform:translateX(-50%); width:22px; height:2px; background:var(--accent); border-radius:0 0 2px 2px; box-shadow:0 0 10px rgba(210,175,130,0.55); }
+
+/* =====================
+   LIGHT THEME (morning/afternoon)
+   ===================== */
+body.light {
+  --bg: #faf8f4;
+  --bg2: #f5f2ec;
+  --card: rgba(0,0,0,0.03);
+  --card2: rgba(0,0,0,0.055);
+  --border: rgba(0,0,0,0.08);
+  --border-accent: rgba(180,130,80,0.35);
+  --text: #2c2825;
+  --text2: #a09888;
+  --text3: #7a7060;
+  --accent: #b87d4b;
+  --accent-soft: rgba(184,125,75,0.08);
+  --accent-glow: rgba(184,125,75,0.15);
+  --good: #5a9e74;
+  --bad: #b06060;
+  --good-soft: rgba(90,158,116,0.08);
+  --bad-soft: rgba(176,96,96,0.08);
+  background: var(--bg);
+}
+
+body.light .atmosphere::before {
+  background: linear-gradient(110deg, rgba(184,125,75,0.06) 0%, transparent 55%);
+}
+body.light .atmosphere::after {
+  background: radial-gradient(ellipse, rgba(255,200,120,0.08) 0%, transparent 65%);
+}
+body.light .glow-1 {
+  background: radial-gradient(circle, rgba(184,125,75,0.06), transparent);
+}
+body.light .glow-2 {
+  background: radial-gradient(circle, rgba(90,158,116,0.05), transparent);
+}
+body.light .message-hero {
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
+}
+body.light .streak-card,
+body.light .breath-card {
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+body.light .bottom-nav {
+  background: rgba(250,248,244,0.85);
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+body.light .mood-pill {
+  background: rgba(255,255,255,0.6);
+}
+body.light .check-btn {
+  background: rgba(255,255,255,0.6);
+}
+body.light .saved-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+body.light .cal-day {
+  background: rgba(255,255,255,0.5);
+}
+body.light .settings-icon {
+  background: rgba(255,255,255,0.6);
+}

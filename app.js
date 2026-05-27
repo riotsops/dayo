@@ -471,3 +471,20 @@ function stopBreathing() {
   btn.classList.remove('running');
   showScreen('screen-home');
 }
+
+/* =====================
+   AUTO THEME
+   ===================== */
+function applyTheme() {
+  const h = new Date().getHours();
+  const isLight = h >= 6 && h < 18;
+  if (isLight) {
+    document.body.classList.add('light');
+  } else {
+    document.body.classList.remove('light');
+  }
+}
+
+// apply on load and every 30 minutes
+applyTheme();
+setInterval(applyTheme, 30 * 60 * 1000);
