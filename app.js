@@ -19,20 +19,41 @@ function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// REGISTER SERVICE WORKER
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(function(reg) {
-        console.log('SW registered');
-      })
-      .catch(function(err) {
-        console.log('SW error:', err);
-      });
+// THEME
+function applyTheme() {
+  const saved = localStorage.getItem('dayo_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+  } else if (saved === 'dark') {
+    document.body.classList.remove('light');
+  } else {
+    const h = new Date().getHours();
+    if (h >= 6 && h < 18) {
+      document.body.classList.add('light');
+    } else {
+      document.body.classList.remove('light');
+    }
+  }
+}
+
+function setTheme(theme) {
+  localStorage.setItem('dayo_theme', theme);
+  applyTheme();
+  document.querySelectorAll('.theme-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.theme === theme);
   });
 }
 
-// REQUEST NOTIFICATIONS
+// SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(function(reg) { console.log('SW registered'); })
+      .catch(function(err) { console.log('SW error:', err); });
+  });
+}
+
+// NOTIFICATIONS
 function requestNotifications() {
   const btn = document.getElementById('btn-enable-notif');
   if (!('Notification' in window)) {
@@ -61,33 +82,25 @@ function requestNotifications() {
     }
   });
 }
+
 function scheduleNotifications() {
   const mood = localStorage.getItem('dayo_mood') || 'peaceful';
   const list = messages[mood] || messages['peaceful'];
   const msg = list[Math.floor(Math.random() * list.length)];
-
-  // morning notification at 8 AM
   const now = new Date();
+
   const morning = new Date();
   morning.setHours(8, 0, 0, 0);
   if (morning <= now) morning.setDate(morning.getDate() + 1);
-  const morningDelay = morning - now;
-
   setTimeout(function() {
     if (Notification.permission === 'granted') {
-      new Notification('Dayo — good morning', {
-        body: msg,
-        icon: '/icon.png'
-      });
+      new Notification('Dayo — good morning', { body: msg, icon: '/icon.png' });
     }
-  }, morningDelay);
+  }, morning - now);
 
-  // evening notification at 8 PM
   const evening = new Date();
   evening.setHours(20, 0, 0, 0);
   if (evening <= now) evening.setDate(evening.getDate() + 1);
-  const eveningDelay = evening - now;
-
   setTimeout(function() {
     if (Notification.permission === 'granted') {
       new Notification('Dayo — evening reflection', {
@@ -95,10 +108,13 @@ function scheduleNotifications() {
         icon: '/icon.png'
       });
     }
-  }, eveningDelay);
+  }, evening - now);
 }
 
+// INIT
 window.onload = function() {
+  applyTheme();
+
   document.getElementById('btn-start').onclick = function() {
     const name = document.getElementById('user-name').value.trim();
     const age = document.getElementById('user-age').value.trim();
@@ -141,7 +157,6 @@ function startApp() {
 
   updateStreak();
   loadTodayCheck();
-  requestNotifications();
 
   showScreen('screen-home');
   document.getElementById('bottom-nav').classList.add('visible');
@@ -233,7 +248,7 @@ function updateStreak() {
   }
   localStorage.setItem('dayo_last_open', today);
   document.getElementById('streak-number').textContent = streak;
-  const msgs = ['quiet days reflected', 'mornings opened', 'days shown up for', 'gentle check-ins'];
+  const msgs = ['quiet days', 'days shown up', 'mornings opened', 'gentle check-ins'];
   document.getElementById('streak-text').textContent = getRandom(msgs);
 }
 
@@ -356,7 +371,7 @@ function loadSaved() {
   const list = document.getElementById('saved-list');
   list.innerHTML = '';
   if (!saved.length) {
-    list.innerHTML = '<div class="saved-empty"><div class="saved-empty-icon">♡</div>nothing saved yet...<br>messages that touch you<br>will find their way here.</div>';
+    list.innerHTML = '<div class="saved-empty"><span class="saved-empty-icon">♡</span>nothing saved yet...<br>messages that touch you<br>will find their way here.</div>';
     return;
   }
   saved.slice().reverse().forEach(function(s) {
@@ -368,7 +383,6 @@ function loadSaved() {
 }
 
 function openSettings() {
-  function openSettings() {
   document.getElementById('settings-name').value = localStorage.getItem('dayo_user') || '';
   document.getElementById('settings-age').value = localStorage.getItem('dayo_age') || '';
   const savedTheme = localStorage.getItem('dayo_theme') || 'auto';
@@ -382,6 +396,7 @@ function openSettings() {
     notifBtn.style.borderColor = 'var(--good)';
   }
 }
+
 function saveName() {
   const name = document.getElementById('settings-name').value.trim();
   if (!name) { alert('name cannot be empty'); return; }
@@ -389,10 +404,7 @@ function saveName() {
   const btn = document.getElementById('btn-save-name');
   btn.textContent = 'saved ✓';
   btn.style.color = 'var(--good)';
-  setTimeout(function() {
-    btn.textContent = 'update name';
-    btn.style.color = '';
-  }, 2000);
+  setTimeout(function() { btn.textContent = 'update name'; btn.style.color = ''; }, 2000);
 }
 
 function saveAge() {
@@ -402,10 +414,7 @@ function saveAge() {
   const btn = document.getElementById('btn-save-age');
   btn.textContent = 'saved ✓';
   btn.style.color = 'var(--good)';
-  setTimeout(function() {
-    btn.textContent = 'update age';
-    btn.style.color = '';
-  }, 2000);
+  setTimeout(function() { btn.textContent = 'update age'; btn.style.color = ''; }, 2000);
 }
 
 function clearAllData() {
@@ -439,10 +448,7 @@ let breathInterval = null;
 let breathRunning = false;
 
 function startBreathing() {
-  if (breathRunning) {
-    stopBreathing();
-    return;
-  }
+  if (breathRunning) { stopBreathing(); return; }
   breathRunning = true;
   const btn = document.getElementById('breath-start-btn');
   btn.textContent = 'stop';
@@ -457,13 +463,12 @@ function startBreathing() {
     { name: 'breathe out', cls: 'exhale', duration: 4 }
   ];
   let phaseIndex = 0;
-  let secondsLeft = phases[0].duration;
   function runPhase() {
     const current = phases[phaseIndex];
     circle.className = 'breathing-circle ' + current.cls;
     instruction.textContent = current.name;
     phase.textContent = current.name;
-    secondsLeft = current.duration;
+    let secondsLeft = current.duration;
     count.textContent = secondsLeft;
     breathInterval = setInterval(function() {
       secondsLeft--;
@@ -494,35 +499,3 @@ function stopBreathing() {
   btn.classList.remove('running');
   showScreen('screen-home');
 }
-
-/* =====================
-   AUTO THEME
-   ===================== */
-function applyTheme() {
-  const saved = localStorage.getItem('dayo_theme');
-  if (saved === 'light') {
-    document.body.classList.add('light');
-  } else if (saved === 'dark') {
-    document.body.classList.remove('light');
-  } else {
-    // auto based on time
-    const h = new Date().getHours();
-    if (h >= 6 && h < 18) {
-      document.body.classList.add('light');
-    } else {
-      document.body.classList.remove('light');
-    }
-  }
-}
-
-function setTheme(theme) {
-  localStorage.setItem('dayo_theme', theme);
-  applyTheme();
-  // update toggle buttons
-  document.querySelectorAll('.theme-btn').forEach(function(b) {
-    b.classList.toggle('active', b.dataset.theme === theme);
-  });
-}
-// apply on load and every 30 minutes
-applyTheme();
-setInterval(applyTheme, 30 * 60 * 1000);
