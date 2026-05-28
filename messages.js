@@ -32,6 +32,7 @@ const messages = {
     "The version of you that succeeds is already inside you. Let them out.",
     "Stop waiting for permission. Nobody is going to give it to you.",
     "Progress is quiet. Keep going even when nobody is watching."
+    "I think you should chase your goal so hard other people think you're crazy, and then when you succeed, they'll ask you how you did it",
   ],
   disciplined: [
     "Discipline is just doing what matters when you don't feel like it.",
