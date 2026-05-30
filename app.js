@@ -123,7 +123,7 @@ window.onload = function() {
     localStorage.setItem('dayo_user', name);
     localStorage.setItem('dayo_age', age);
     localStorage.setItem('dayo_mood', 'peaceful');
-    localStorage.setItem('dayo_setup_done', 'yes');
+    localStorage.setItem("dayo_setup_done", "yes"); alert("saved! loading...");
     startApp();
   };
 
