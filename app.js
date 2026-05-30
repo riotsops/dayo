@@ -19,7 +19,6 @@ function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// THEME
 function applyTheme() {
   const saved = localStorage.getItem('dayo_theme');
   if (saved === 'light') {
@@ -44,7 +43,6 @@ function setTheme(theme) {
   });
 }
 
-// SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/service-worker.js')
@@ -53,7 +51,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// NOTIFICATIONS
 function requestNotifications() {
   const btn = document.getElementById('btn-enable-notif');
   if (!('Notification' in window)) {
@@ -88,7 +85,6 @@ function scheduleNotifications() {
   const list = messages[mood] || messages['peaceful'];
   const msg = list[Math.floor(Math.random() * list.length)];
   const now = new Date();
-
   const morning = new Date();
   morning.setHours(8, 0, 0, 0);
   if (morning <= now) morning.setDate(morning.getDate() + 1);
@@ -97,7 +93,6 @@ function scheduleNotifications() {
       new Notification('Dayo — good morning', { body: msg, icon: '/icon.png' });
     }
   }, morning - now);
-
   const evening = new Date();
   evening.setHours(20, 0, 0, 0);
   if (evening <= now) evening.setDate(evening.getDate() + 1);
@@ -111,7 +106,6 @@ function scheduleNotifications() {
   }, evening - now);
 }
 
-// INIT
 window.onload = function() {
   applyTheme();
 
@@ -123,7 +117,7 @@ window.onload = function() {
     localStorage.setItem('dayo_user', name);
     localStorage.setItem('dayo_age', age);
     localStorage.setItem('dayo_mood', 'peaceful');
-    localStorage.setItem("dayo_setup_done", "yes"); alert("saved! loading...");
+    localStorage.setItem('dayo_setup_done', 'yes');
     startApp();
   };
 
@@ -171,7 +165,6 @@ function loadMessage(mood) {
   const msg = list[idx];
   document.getElementById('message-text').textContent = msg;
   document.getElementById('message-mood-tag').textContent = mood;
-
   const saved = getSaved();
   const isSaved = saved.find(function(s) { return s.text === msg; });
   const btn = document.getElementById('save-btn');
@@ -443,7 +436,6 @@ function getKeyFromDate(d) { return d.getFullYear() + '-' + (d.getMonth()+1) + '
 function getDayData(key) { return JSON.parse(localStorage.getItem('dayo_day_' + key) || '{}'); }
 function saveDayData(key, data) { localStorage.setItem('dayo_day_' + key, JSON.stringify(data)); }
 
-// BREATHING
 let breathInterval = null;
 let breathRunning = false;
 
@@ -486,15 +478,11 @@ function startBreathing() {
 function stopBreathing() {
   breathRunning = false;
   clearInterval(breathInterval);
-  const circle = document.getElementById('breathing-circle');
-  const instruction = document.getElementById('breathing-instruction');
-  const phase = document.getElementById('breathing-phase');
-  const count = document.getElementById('breathing-count');
+  document.getElementById('breathing-circle').className = 'breathing-circle';
+  document.getElementById('breathing-instruction').textContent = 'tap to begin';
+  document.getElementById('breathing-phase').textContent = '';
+  document.getElementById('breathing-count').textContent = '';
   const btn = document.getElementById('breath-start-btn');
-  circle.className = 'breathing-circle';
-  instruction.textContent = 'tap to begin';
-  phase.textContent = '';
-  count.textContent = '';
   btn.textContent = 'begin';
   btn.classList.remove('running');
   showScreen('screen-home');
